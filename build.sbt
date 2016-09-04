@@ -6,9 +6,9 @@ instrumentTestRunner :=
 
 scalaVersion := "2.11.8"
 
-useProguard := false
+/* useProguard := false
 useProguardInDebug := false
-dexMulti := true
+dexMulti := true */
 
 platformTarget := "android-24"
 
@@ -19,8 +19,14 @@ packagingOptions := PackagingOptions(excludes = Seq("META-INF/ASL2.0", "META-INF
 libraryDependencies ++=
   Seq("com.so" %% "typebase-lite-android" % "0.1-SNAPSHOT",
     "com.couchbase.lite" % "couchbase-lite-android-forestdb" % "1.3.0",
-    // "com.couchbase.lite" % "couchbase-lite-android" % "1.3.0",
     "com.android.support" % "appcompat-v7" % "24.0.0",
     "com.android.support.test" % "runner" % "0.5" % "androidTest",
     "com.android.support.test.espresso" % "espresso-core" % "2.2.2" % "androidTest"
   )
+
+proguardOptions in Android ++= Seq(
+  "-keep class com.couchbase.** { *;}",
+  "-dontwarn org.w3c.dom.bootstrap.DOMImplementationRegistry",
+  "-dontwarn okio.**",
+  "-dontwarn shapeless.**"
+)

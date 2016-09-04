@@ -32,5 +32,8 @@ out
 # Vert.x caching
 .vertx
 
+# Generated code
+/gen
+
 # couchbase lite stuff
 /data
