@@ -106,7 +106,7 @@ class MainActivity extends AppCompatActivity {
     // Live queries are also supported. Now we want to be notified
     // whenever someone from New York, whose age is > 30 starts at our company.
     logSection("Live query: anyone new of age > 30 from NY?")
-    val liveQ = cityAgeIndex.sLiveQuery(startKey("New York" :: 30 :: HNil), endKey("New York" :: Last)).where(_.is[Employee])
+    val liveQ = cityAgeIndex.sLiveQuery(startKey("New York" :: 30 :: HNil), endKey("New York" :: Last)).flatMap(_.to[Employee])
     val subscription = liveQ.subscribe(_.foreach(tblLog))
     liveQ.start()
 
