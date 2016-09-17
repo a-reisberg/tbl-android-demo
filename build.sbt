@@ -17,7 +17,7 @@ javacOptions in Compile ++= "-source" :: "1.7" :: "-target" :: "1.7" :: Nil
 packagingOptions := PackagingOptions(excludes = Seq("META-INF/ASL2.0", "META-INF/LICENSE", "META-INF/NOTICE"))
 
 libraryDependencies ++=
-  Seq("com.so" %% "typebase-lite-android" % "0.1-SNAPSHOT",
+  Seq("com.shalloui" %% "typebase-lite-android" % "0.1",
     "com.couchbase.lite" % "couchbase-lite-android-forestdb" % "1.3.0",
     "com.android.support" % "appcompat-v7" % "24.0.0",
     "com.android.support.test" % "runner" % "0.5" % "androidTest",

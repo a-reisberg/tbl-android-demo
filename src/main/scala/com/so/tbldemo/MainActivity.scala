@@ -5,9 +5,8 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.couchbase.lite.Manager
 import com.couchbase.lite.android.AndroidContext
-import com.so.typebaselite._
-import com.so.typebaselite.TblQuery._
-import com.so.typebaselite.mapper._
+import com.shalloui.tblite._
+import com.shalloui.tblite.TblQuery._
 import shapeless._
 
 class MainActivity extends AppCompatActivity {
@@ -53,7 +52,7 @@ class MainActivity extends AppCompatActivity {
     val customerSuppId = tblDb.put(customerSupp)
 
     logSection("Get sale dept and hr dept")
-    tblLog(tblDb[Department](saleDeptId, hrId))
+    tblLog(tblDb.getType[Department](saleDeptId, hrId))
 
     // Query all departments.
     // typeView is a view created automatically by typebase lite.
@@ -74,7 +73,7 @@ class MainActivity extends AppCompatActivity {
     logSection("Department name, along with List of employee names")
     val deptEmployeeQ = for {
       dept <- deptQ
-      employeeNames = tblDb[Employee](dept.employeeIds: _*).map(_.name)
+      employeeNames = tblDb.getType[Employee](dept.employeeIds: _*).map(_.name)
     } yield (dept.name, employeeNames)
 
     deptEmployeeQ.foreach(tblLog)
@@ -93,20 +92,20 @@ class MainActivity extends AppCompatActivity {
     // First, create TblView. The key of the index is String (for city) and Int (for age).
     // More general MapViews and also be created via createMapView. Map-Reduce will come soon.
     logSection("Same query, but with index")
-    val cityAgeIndex = tblDb.createIndexView[String :: Int :: HNil]("city-age", "1.0", {
+    val cityAgeIndex = tblDb.createIndex[String :: Int :: HNil]("city-age", "1.0", {
       case e: Employee => Set(e.address.city :: e.age :: HNil)
       case _ => Set()
     })
 
     // Now, we create a query using the index. This Query can also be mixed with others, using various combinators.
-    val cityAgeQ2 = cityAgeIndex.sQuery(startKey("New York" :: 30 :: HNil), endKey("New York" :: Last))
+    val cityAgeQ2 = cityAgeIndex.sQuery(startKey("New York" :: 30 :: HNil), endKey("New York" :: Last)).extractType[Employee]
 
     cityAgeQ2.foreach(tblLog)
 
     // Live queries are also supported. Now we want to be notified
     // whenever someone from New York, whose age is > 30 starts at our company.
     logSection("Live query: anyone new of age > 30 from NY?")
-    val liveQ = cityAgeIndex.sLiveQuery(startKey("New York" :: 30 :: HNil), endKey("New York" :: Last)).flatMap(_.to[Employee])
+    val liveQ = cityAgeIndex.sLiveQuery(startKey("New York" :: 30 :: HNil), endKey("New York" :: Last)).extractType[Employee]
     val subscription = liveQ.subscribe(_.foreach(tblLog))
     liveQ.start()
 
